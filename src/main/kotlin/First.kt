@@ -36,7 +36,7 @@ private fun calculateIntervals(data: List<Double>, n: Int): List<Pair<Double, Do
     println("Принимаем k = $ceilK")
     println()
     println("[i] Ширина интервала:")
-    println("Δl = data.max() - data.min() / k = ($maxVal - $minVal) / k = $intervalWidth")
+    println("Δl = data.max() - data.min() / k = (${data.maxOrNull() ?: 0.0} - ${data.minOrNull() ?: 0.0}) / $k = $intervalWidth")
     val ceilIntervalWidth = round(intervalWidth).toInt()
     println("Принимаем Δl = $ceilIntervalWidth")
 
@@ -106,7 +106,7 @@ private fun calculateConfidenceInterval(
 ): Pair<Double, Double> {
     println()
     println("[i] Ширина доверительного интервала:")
-    val tValue = 1.96
+    val tValue = 1.67
     println("Для α = 0.05 и n = 50: t = $tValue")
     print("Δ = t * σ / sqrt(size - 1) = $tValue * $stdDev / sqrt(${size - 1}) = ")
     val marginOfError = tValue * stdDev / sqrt(n - 1.0)
@@ -127,7 +127,7 @@ private fun calculateRelativeAccuracy(confidenceInterval: Pair<Double, Double>, 
     println("[i] Относительная точность оценки математического ожидания:")
     val width = confidenceInterval.second - confidenceInterval.first
     val result = width / (2 * mean)
-    println("μ = Δ / (2 * l) = $width / 2 * $mean = $result")
+    println("μ = Δ / l = ${width / 2} / $mean = $result")
     println()
     println("Это значит, что с доверительной вероятностью pd = 0.95 относительная ошибка при\nоценке среднего значения не превысит ±${String.format("%.2f", result * 100)}% от величины среднего значения")
     return result
@@ -257,8 +257,8 @@ fun main() {
 
     histogramChart.styler.isLegendVisible = false
     histogramChart.styler.setOverlapped(true)
-    histogramChart.addSeries("Частоты", midpoints, frequencies)
-    val overlappedLine: CategorySeries = histogramChart.addSeries("Полигон", midpoints, frequencies)
+    histogramChart.addSeries("Частоты", midpoints, densityFunction)
+    val overlappedLine: CategorySeries = histogramChart.addSeries("Полигон", midpoints, densityFunction)
     overlappedLine.setChartCategorySeriesRenderStyle(CategorySeries.CategorySeriesRenderStyle.Line)
 
     // Построение кумуляты
@@ -280,10 +280,10 @@ fun main() {
     )
 
     val cumulativeChartYData = listOf(.0).plus(
-        cumulativeFrequencies.flatMapIndexed { index: Int, d: Double ->
+        cumulativeDistribution.flatMapIndexed { index: Int, d: Double ->
             listOf(
-                cumulativeFrequencies[index],
-                cumulativeFrequencies[index]
+                cumulativeDistribution[index],
+                cumulativeDistribution[index]
             )
         }
     )
