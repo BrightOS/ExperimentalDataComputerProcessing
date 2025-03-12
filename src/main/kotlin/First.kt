@@ -153,7 +153,7 @@ private fun calculateCoefficientOfVariation(stdDev: Double, mean: Double): Doubl
     return result
 }
 
-fun readXlsFile(filePath: String, columnIndex: Int): List<TableEntry> {
+private fun readXlsFile(filePath: String, columnIndex: Int): List<TableEntry> {
     val data = mutableListOf<TableEntry>()
 
     FileInputStream(File(filePath)).use { fis ->
@@ -199,7 +199,7 @@ fun readXlsFile(filePath: String, columnIndex: Int): List<TableEntry> {
 // Основная функция
 fun main() {
     // Пример данных (замените их на свои данные из лабораторной работы)
-    val data = readXlsFile(filePath = "source_data.xls", columnIndex = 52).map { it.cellValue }
+    val data = readXlsFile(filePath = "source_data.xls", columnIndex = 44).map { it.cellValue }
     val n = data.size
 
     val intervals = calculateIntervals(data, n)
@@ -270,8 +270,8 @@ fun main() {
         .yAxisTitle("Накопленные частоты")
         .build()
 
-    val cumulativeChartXData = listOf(.0).plus(
-        intervals.flatMapIndexed { index: Int, pair: Pair<Double, Double> ->
+    val cumulativeChartXData = listOf(.0, .0, .0).plus(
+        intervals.subList(1, intervals.size).flatMapIndexed { index: Int, pair: Pair<Double, Double> ->
             listOf(
                 if (index == 0) 0 else pair.first - (pair.second - pair.first),
                 pair.first
@@ -287,6 +287,9 @@ fun main() {
             )
         }
     )
+
+    println(cumulativeChartXData.size)
+    println(cumulativeChartYData.size)
 
     cumulativeChart.styler.isLegendVisible = false
     cumulativeChart.addSeries(
